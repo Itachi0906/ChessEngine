@@ -1,13 +1,5 @@
-﻿  AI.cpp
-  Game.cpp
-  Gamestate.cpp
-C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(434,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(616,30): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(620,24): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(630,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(687,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  main.cpp
-  Move.cpp
-  Test.cpp
-  Generating Code...
+﻿  Gamestate.cpp
+C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(417,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(610,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\Game1\src\Gamestate.cpp(666,13): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   Game1.vcxproj -> C:\Users\hardi\OneDrive\Desktop\Projects\Chess\Game1\x64\Debug\Game1.exe

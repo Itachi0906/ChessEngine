@@ -134,6 +134,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Position.h" />
     <ClInclude Include="src\AI.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Gamestate.h" />
@@ -233,6 +234,7 @@
     <Image Include="vendor\images\wR.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Position.cpp" />
     <ClCompile Include="src\AI.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Gamestate.cpp" />

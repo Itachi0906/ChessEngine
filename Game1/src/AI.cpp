@@ -128,8 +128,9 @@ Move* AI::findRandomMove(Gamestate* gs, std::vector<std::vector<int>>& validMove
 {
 	nextMove = new Move();
 	auto vec = validMoves[rand() % validMoves.size()];
-	std::pair<int,int> p = { vec[0],vec[1] }, p2 = { vec[2],vec[3] };
-	nextMove->register_move(p, p2, gs->board);
+    Position p, p2;
+	p.instantiate(vec[0], vec[1]), p2.instantiate(vec[2], vec[3]);
+	nextMove->registerMove(p, p2, gs->board);
 	return nextMove;
 }
 
@@ -138,7 +139,7 @@ Move* AI::FindBestMove(Gamestate* gs, std::vector<std::vector<int>>& validMoves)
 	nextMove = new Move();
 	int turnM = gs->whiteToMove == true ? 1 : -1;
 	MinMaxAlphaBeta(gs, validMoves, Depth, -checkmate, checkmate, turnM);
-    //std::cout << nextMove->start_row << " " << nextMove->start_col << " " << nextMove->end_row << " " << nextMove->end_col << std::endl;
+    //std::cout << nextMove->startRow << " " << nextMove->startCol << " " << nextMove->endRow << " " << nextMove->endCol << std::endl;
 	return nextMove;
 }
 
@@ -190,9 +191,10 @@ double AI::MinMaxAlphaBeta(Gamestate* gs, std::vector<std::vector<int>>& validMo
 	for (auto move : validMoves)
 	{
 		Move* m = new Move();
-		std::pair<int, int> p = { move[0],move[1] }, p1 = { move[2],move[3] };
-		m->register_move(p, p1,gs->board);
-        std::cout << m->start_row << " " << m->start_col << " " << m->end_row << " " << m->end_col << std::endl;
+        Position p, p1;
+		p.instantiate(move[0], move[1]), p1.instantiate(move[2], move[3]);
+		m->registerMove(p, p1,gs->board);
+        std::cout << m->startRow << " " << m->startCol << " " << m->endRow << " " << m->endCol << std::endl;
 		gs->makemove(m);
 		gs->whiteToMove = !gs->whiteToMove;
 		std::vector<std::vector<int>> nextMoves = gs->GenerateAllValidMoves();

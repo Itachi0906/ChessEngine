@@ -8,14 +8,14 @@ Move::~Move()
 {
 }
 
-void Move::register_move(std::pair<int, int>& st_sq, std::pair<int, int>& end_sq, std::vector<std::vector<int>>& board)
+void Move::registerMove(Position st_sq, Position end_sq, std::vector<std::vector<int>>& board)
 {
-	start_col = st_sq.second;
-	start_row = st_sq.first;
-	end_col = end_sq.second;
-	end_row = end_sq.first;
-	piece_moved = board[start_row][start_col];
-	piece_captured = board[end_row][end_col];
-	isCaptured = piece_captured != 0 ? true : false;
+	startCol = st_sq.getFile();
+	startRow = st_sq.getRank();
+	endCol = end_sq.getFile();
+	endRow = end_sq.getRank();
+	pieceMoved = board[startRow][startCol];
+	pieceCaptured = board[endRow][endCol];
+	isCaptured = pieceCaptured != 0 ? true : false;
 }
 
