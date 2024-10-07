@@ -115,49 +115,47 @@ void Gamestate::init(std::string fen)
 
 void Gamestate::makemove(Move* move)
 {
-	board[move->start_row][move->start_col] = 0;
-	board[move->end_row][move->end_col] = move->piece_moved;
+	board[move->startRow][move->startCol] = 0;
+	board[move->endRow][move->endCol] = move->pieceMoved;
 	movelog.push_back(move);
-	if (move->piece_moved == 9)
+	if (move->pieceMoved == WhiteKing)
 	{
-		whiteKingLocation = move->end_row * 8 + move->end_col;
+		whiteKingLocation = move->endRow * 8 + move->endCol;
 	}
-	else if (move->piece_moved == 17)
+	else if (move->pieceMoved == BlackKing)
 	{
-		blackKingLocation = move->end_row * 8 + move->end_col;
-	}
-
-	if ((move->piece_moved == 10 && move->end_row == 0) || (move->piece_moved == 18 && move->end_row == 7))
-	{
-		board[move->end_row][move->end_col] = move->piece_moved + 4;
-		move->changedPiece = move->end_row == 0 ? 10:18;
+		blackKingLocation = move->endRow * 8 + move->endCol;
 	}
 
-
-	if (move->piece_moved == 9 || move->piece_moved == 17)
+	if ((move->pieceMoved == WhitePawn && move->endRow == 0) || (move->pieceMoved == BlackPawn && move->endRow == 7))
 	{
-		if (move->end_col - move->start_col == 2)
+		board[move->endRow][move->endCol] = move->pieceMoved + 4;
+		move->changedPiece = move->endRow == 0 ? WhitePawn:BlackPawn;
+	}
+
+
+	if (move->pieceMoved == WhiteKing || move->pieceMoved == BlackKing)
+	{
+		if (move->endCol - move->startCol == 2)
 		{
-			//std::cout << "castling king side" << std::endl;
-			board[move->end_row][move->end_col - 1] = board[move->end_row][move->end_col + 1]; // shift the rook 
-			board[move->end_row][move->end_col + 1] = 0;
+			board[move->endRow][move->endCol - 1] = board[move->endRow][move->endCol + 1];
+			board[move->endRow][move->endCol + 1] = 0;
 		}
-		else if(move->start_col - move->end_col == 2)
+		else if(move->startCol - move->endCol == 2)
 		{
-			//std::cout << "castling queen side" << std::endl;
-			board[move->end_row][move->end_col + 1] = board[move->end_row][move->end_col - 2];
-			board[move->end_row][move->end_col - 2] = 0;
+			board[move->endRow][move->endCol + 1] = board[move->endRow][move->endCol - 2];
+			board[move->endRow][move->endCol - 2] = 0;
 		}
 	}
 
-	if (move->end_row * 8 + move->end_col == enpassant_target_square && (move->piece_moved == 10 || move->piece_moved == 18))
+	if (move->endRow * 8 + move->endCol == enpassant_target_square && (move->pieceMoved == 10 || move->pieceMoved == 18))
 	{
-		board[move->start_row][move->end_col] = 0;
+		board[move->startRow][move->endCol] = 0;
 	}
 
-	if ((move->piece_moved == 10 || move->piece_moved == 18) && abs(move->start_row - move->end_row) == 2)
+	if ((move->pieceMoved == WhitePawn || move->pieceMoved == BlackPawn) && abs(move->startRow - move->endRow) == 2)
 	{
-		enpassant_target_square = ((move->start_row + move->end_row) / 2) * 8 + move->start_col;
+		enpassant_target_square = ((move->startRow + move->endRow) / 2) * 8 + move->startCol;
 	}
 	else
 	{
@@ -175,37 +173,35 @@ void Gamestate::undomove(std::vector<Move*>& movelog,std::vector<std::vector<int
 	{
 		Move* move = movelog[movelog.size() - 1];
 		movelog.pop_back();
-		board[move->start_row][move->start_col] = move->piece_moved;
-		board[move->end_row][move->end_col] = move->piece_captured;
+		board[move->startRow][move->startCol] = move->pieceMoved;
+		board[move->endRow][move->endCol] = move->pieceCaptured;
 
-		if ((move->changedPiece == 10 && move->end_row == 0) || (move->changedPiece == 18 && move->end_row == 7))
+		if ((move->changedPiece == WhitePawn && move->endRow == 0) || (move->changedPiece == BlackPawn && move->endRow == 7))
 		{
-			board[move->start_row][move->start_col] = move->changedPiece;
+			board[move->startRow][move->startCol] = move->changedPiece;
 		}
 		
 
 		enPassantPossibleLog.pop_back();
 		enpassant_target_square = enPassantPossibleLog[enPassantPossibleLog.size() - 1];
-		if ((move->piece_moved == 10 || move->piece_moved == 18) && abs(move->start_row - move->end_row) == 2)
+		if ((move->pieceMoved == WhitePawn || move->pieceMoved == BlackPawn) && abs(move->startRow - move->endRow) == 2)
 		{
 			enpassant_target_square = -1;
 		}
 
 		CastleRightsLog.pop_back();
 		castling_rights = CastleRightsLog[CastleRightsLog.size() - 1];
-		if (move->piece_moved == 9 || move->piece_moved == 17)
+		if (move->pieceMoved == WhiteKing || move->pieceMoved == BlackKing)
 		{
-			if (move->end_col - move->start_col == 2)
+			if (move->endCol - move->startCol == 2)
 			{
-				//std::cout << "castling king side" << std::endl;
-				board[move->end_row][move->end_col + 1] = board[move->end_row][move->end_col - 1]; // shift the rook 
-				board[move->end_row][move->end_col - 1] = 0;
+				board[move->endRow][move->endCol + 1] = board[move->endRow][move->endCol - 1]; // shift the rook 
+				board[move->endRow][move->endCol - 1] = 0;
 			}
-			else if(move->start_col - move->end_col == 2)
+			else if(move->startCol - move->endCol == 2)
 			{
-				//std::cout << "castling queen side" << std::endl;
-				board[move->end_row][move->end_col - 2] = board[move->end_row][move->end_col + 1];
-				board[move->end_row][move->end_col + 1] = 0;
+				board[move->endRow][move->endCol - 2] = board[move->endRow][move->endCol + 1];
+				board[move->endRow][move->endCol + 1] = 0;
 			}
 		}
 	}
@@ -222,48 +218,45 @@ std::vector<std::vector<int>> Gamestate::GenerateAllMoves()
 	{
 		for (int j = 0;j < 8;j++)
 		{
-			//std::cout << board[i][j] << " ";
 			if (whiteToMove)
 			{
-				if (board[i][j] - 8 >= 4 && board[i][j] < 16 )
+				if (board[i][j] == WhiteRook || board[i][j] == WhiteQueen || board[i][j] == WhiteBishop)
 				{
 					generateSlidingMoves(possible_moves, i, j,board[i][j] - 8);
 				}
-				else if (board[i][j] - 8 == 3)
+				else if (board[i][j] == WhiteKnight)
 				{
 					generateKnightMoves(possible_moves, i, j);
 				}
-				else if (board[i][j] - 8 == 2)
+				else if (board[i][j] == WhitePawn)
 				{
-					//std::cout << i << " " << j << std::endl;
 					generatePawnMoves(possible_moves, i, j);
 				}
-				else if (board[i][j] - 8 == 1)
+				else if (board[i][j] == WhiteKing)
 				{
 					generateKingMoves(possible_moves, i, j);
 				}
 			}
 			else
 			{
-				if (board[i][j] - 16 >= 4)
+				if (board[i][j] == BlackRook || board[i][j] == BlackQueen || board[i][j] == BlackBishop)
 				{
 					generateSlidingMoves(possible_moves, i, j,board[i][j] - 16);
 				}
-				else if (board[i][j] - 16 == 3)
+				else if (board[i][j] == BlackKnight)
 				{
 					generateKnightMoves(possible_moves, i, j);
 				}
-				else if (board[i][j] - 16 == 2)
+				else if (board[i][j] == BlackPawn)
 				{
 					generatePawnMoves(possible_moves, i, j);
 				}
-				else if (board[i][j] - 16 == 1)
+				else if (board[i][j] == BlackKing)
 				{
 					generateKingMoves(possible_moves, i, j);
 				}
 			}
 		}
-		//std::cout << std::endl;
 	}
 	return possible_moves;
 }
@@ -276,60 +269,52 @@ void Gamestate::checkForPinsAndChecks()
 	inCheck = false;
 	if (whiteToMove)
 	{
-		//std::cout << "white" << std::endl;
-		allyColor = 8;
-		enemyColor = 16;
+		allyColor = White;
+		enemyColor = Black;
 		startRow = whiteKingLocation/8;
 		startCol = whiteKingLocation%8;
-		//std::cout << startRow << " "<<  startCol << std::endl;
 	}
 	else
 	{
-		allyColor = 16;
-		enemyColor = 8;
+		allyColor = Black;
+		enemyColor = White;
 		startRow = blackKingLocation / 8;
 		startCol = blackKingLocation % 8;
 	}
-	const std::vector<std::vector<int>> dir3 = { {0,1},{0,-1},{1,0},{-1,0},{-1,1},{-1,-1},{1,1},{1,-1} };
-	for (int i = 0;i < dir3.size();i++)
+	const int dir3[8][2] = {{0,1},{0,-1},{1,0},{-1,0},{-1,1},{-1,-1},{1,1},{1,-1}};
+	for (int i = 0;i < 8;i++)
 	{
-		std::vector<int> d = dir3[i];
+		int dx = dir3[i][0];
+		int dy = dir3[i][1];
 		possiblePin = {};
 		for (int j = 1;j < 8;j++)
 		{
-			int endRow = startRow + d[0] * j;
-			int endCol = startCol + d[1] * j;
+			int endRow = startRow + dx * j;
+			int endCol = startCol + dy * j;
 			if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)
 			{
 				int endPiece = board[endRow][endCol];
 				int y = endPiece ^ allyColor;
-				if (y <= 6 && (endPiece != 9 && endPiece != 17))
+				if (y <= 6 && (endPiece != WhiteKing && endPiece != BlackKing))
 				{
-					//std::cout << endPiece << " " << allyColor << std::endl;
 					if (possiblePin.size() == 0)
-						possiblePin = { endRow , endCol , d[0] , d[1] };
+						possiblePin = { endRow , endCol , dx , dy };
 					else
 						break;
 				}
 				else if ((endPiece^enemyColor) <= 6)
 				{
 					int x = endPiece ^ enemyColor;
-					//std::cout << endPiece << " " << enemyColor << " " << x<<std::endl;
-					if ((0 <= i && i <= 3 && (x) == 5) || (4 <= i && i <= 7 && (x) == 4) || (j == 1 && (x) == 2 && ((enemyColor == 8 && 6 <= i && i <= 7) || (enemyColor == 16 && 4 <= i && i <= 5))) || ((x) == 6) || (j == 1 && (x) == 1))
+					if ((0 <= i && i <= 3 && (x) == 5) || (4 <= i && i <= 7 && (x) == 4) || (j == 1 && (x) == 2 && ((enemyColor == White && 6 <= i && i <= 7) || (enemyColor == Black && 4 <= i && i <= 5))) || ((x) == 6) || (j == 1 && (x) == 1))
 					{
-						//std::cout << startRow << " " << startCol << std::endl;
-						//std::cout << possiblePin[0] << " " << possiblePin[1] << std::endl;
  						if (possiblePin.size() == 0)
 						{
-							//std::cout << "check" << std::endl;
 							inCheck = true;
-							checks.push_back({ endRow, endCol , d[0], d[1] });
+							checks.push_back({ endRow, endCol , dx, dy });
 							break;
 						}
 						else
 						{
-							//std::cout << "pin" << std::endl;
-							/* std::cout << endRow << " " << endCol << std::endl; */
 							pins.push_back(possiblePin);
 							break;
 						}
@@ -341,18 +326,18 @@ void Gamestate::checkForPinsAndChecks()
 			}
 		}
 	}
-	const std::vector<std::pair<int, int>> dir2 = { {1,2} , {1, -2}, {-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1} };
-	for (auto p : dir2)
+	const int dir2[8][2] = {{1,2} , {1, -2}, {-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
+	for (int i = 0;i<8;i++)
 	{
-		int endRow = startRow + p.first;
-		int endCol = startCol + p.second;
+		int endRow = startRow + dir2[i][0];
+		int endCol = startCol + dir2[i][1];
 		if (0 <= endRow && endRow < 8 && 0 <= endCol && endCol < 8)
 		{
 			int endPiece = board[endRow][endCol];
 			if ((endPiece^enemyColor) == 3)
 			{
 				inCheck = true;
-				checks.push_back({ endRow, endCol, p.first, p.second });
+				checks.push_back({ endRow, endCol, dir2[i][0], dir2[i][1]});
 			}
 		}
 	}
@@ -362,7 +347,6 @@ void Gamestate::checkForPinsAndChecks()
 std::vector<std::vector<int>> Gamestate::GenerateAllValidMoves()
 {
 	checks.clear();
-	//possiblemovestest.clear();
 	checkForPinsAndChecks();
 	std::vector<std::vector<int>> ValidMoves;
 	int kingRow, kingCol;
@@ -378,7 +362,6 @@ std::vector<std::vector<int>> Gamestate::GenerateAllValidMoves()
 	}
 	if (inCheck)
 	{
-		//std::cout << "inCheck" << std::endl;
 		if (checks.size() == 1)
 		{
 			std::vector<std::vector<int>> ValidMoves1 = GenerateAllMoves();
@@ -446,7 +429,7 @@ void Gamestate::generatePawnMoves(std::vector<std::vector<int>>& possible_moves,
 	{
 		moveAmount = -1;
 		startRow = 6;
-		enemyColor = 16;
+		enemyColor = Black;
 		kingrow = whiteKingLocation / 8;
 		kingcol = whiteKingLocation % 8;
 	}
@@ -454,45 +437,42 @@ void Gamestate::generatePawnMoves(std::vector<std::vector<int>>& possible_moves,
 	{
 		moveAmount = 1;
 		startRow = 1;
-		enemyColor = 8;
+		enemyColor = White;
 		kingrow = blackKingLocation / 8;
 		kingcol = blackKingLocation % 8;
 	}
 	Move* move = new Move();
-	std::pair<int, int> p, p2;
+	Position p, p2;
 
-	if (board[r + moveAmount][c] == 0) // 1 pawn advance move
+	if (board[r + moveAmount][c] == 0)
 	{
 		std::vector<int> temp = { moveAmount , 0 };
 		if (!piecePinned || pindirections == temp)
 		{
-			p = { r,c }, p2 = { r + moveAmount , c };
-			move->register_move(p, p2, board);
+			p.instantiate(r,c), p2.instantiate(r + moveAmount , c);
+			move->registerMove(p, p2, board);
 			possible_moves.push_back({ r, c, r + moveAmount, c });
-			if (r == startRow && board[r + 2 * moveAmount][c] == 0) // 2 pawn advance move
+			if (r == startRow && board[r + 2 * moveAmount][c] == 0)
 			{
-				p2 = { r + 2 * moveAmount , c };
-				move->register_move(p, p2, board);
+				p2.instantiate(r + 2 * moveAmount , c);
+				move->registerMove(p, p2, board);
 				possible_moves.push_back({ r , c , r + 2 * moveAmount, c });
 			}
 		}
 	}
 	if (c - 1 >= 0)
 	{
-		//std::cout << r + moveAmount <<std::endl;
-		//std::cout << board[r + moveAmount][c - 1] - enemyColor << std::endl;
 		std::vector<int> temp = { moveAmount, -1 };
 		if (!piecePinned || pindirections == temp)
 		{
 			if ((board[r + moveAmount][c - 1]^enemyColor) <= 6)
 			{
-				p = { r,c };
-				p2 = { r + moveAmount, c - 1 };
-				move->register_move(p, p2, board);
+				p.instantiate(r,c);
+				p2.instantiate(r + moveAmount, c - 1);
+				move->registerMove(p, p2, board);
 				possible_moves.push_back({ r, c , r + moveAmount , c - 1 });
 			}
 			int t = (r + moveAmount) * 8 +  c - 1 ;
-			//std::cout << t << " " << enpassant_target_square << std::endl;
 			if (t == enpassant_target_square)
 			{
 				bool attackingPiece = false, blockingPiece = false;
@@ -532,8 +512,8 @@ void Gamestate::generatePawnMoves(std::vector<std::vector<int>>& possible_moves,
 				}
 				if (!attackingPiece || blockingPiece)
 				{
-					p2 = { r +  moveAmount , c - 1};
-					move->register_move(p, p2, board);
+					p2.instantiate(r +  moveAmount , c - 1);
+					move->registerMove(p, p2, board);
 					possible_moves.push_back({ r , c , r + moveAmount, c - 1});
 				}
 			}
@@ -546,9 +526,9 @@ void Gamestate::generatePawnMoves(std::vector<std::vector<int>>& possible_moves,
 		{
 			if ((board[r + moveAmount][c + 1]^enemyColor) <= 6)
 			{
-				p = { r,c };
-				p2 = { r + moveAmount, c + 1 };
-				move->register_move(p, p2, board);
+				p.instantiate(r,c);
+				p2.instantiate(r + moveAmount, c + 1);
+				move->registerMove(p, p2, board);
 				possible_moves.push_back({ r, c , r + moveAmount , c + 1 });
 			}
 			int t = (r + moveAmount) * 8 + c  + 1;
@@ -590,8 +570,8 @@ void Gamestate::generatePawnMoves(std::vector<std::vector<int>>& possible_moves,
 				}
 				if (!attackingPiece || blockingPiece)
 				{
-					p2 = { r + moveAmount , c + 1 };
-					move->register_move(p, p2, board);
+					p2.instantiate(r + moveAmount, c + 1);
+					move->registerMove(p, p2, board);
 					possible_moves.push_back({ r , c , r + moveAmount, c + 1 });
 				}
 			}
@@ -612,17 +592,17 @@ void Gamestate::generateSlidingMoves(std::vector<std::vector<int>>& possible_mov
 		allyColor = 16;
 		enemyColor = 8;
 	}
-	const std::vector<std::pair<int, int>> dir = { {0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}};
-	int start_ind = 0 , end_ind = dir.size() - 1;
+	const int dir[8][2] = { {0,1},{0,-1},{1,0},{-1,0},{1,1},{1,-1},{-1,1},{-1,-1}};
+	int startInd = 0 , endInd = 7;
 	if (type == 4)
 	{
-		start_ind = 4;
-		end_ind = dir.size() - 1;
+		startInd = 4;
+		endInd = 7;
 	}
 	else if (type == 5)
 	{
-		start_ind = 0;
-		end_ind = 3;
+		startInd = 0;
+		endInd = 3;
 	}
 
 	bool piecePinned = false;
@@ -641,33 +621,32 @@ void Gamestate::generateSlidingMoves(std::vector<std::vector<int>>& possible_mov
 		}
 	}
 
-	//std::cout << whiteToMove << std::endl;
-	//std::cout << type << " " << start_ind<<" "<<end_ind<< std::endl;
-	for (int i = start_ind;i <= end_ind;i++)
+	for (int i = startInd;i <= endInd;i++)
 	{
 		for (int j = 1;j < 8;j++)
 		{
-			int endrow = r + dir[i].first * j;
-			int endcol = c + dir[i].second * j;
+			int endrow = r + dir[i][0] * j;
+			int endcol = c + dir[i][1] * j;
 
 			if (0 <= endrow && endrow < 8 && endcol >= 0 && endcol < 8)
 			{
-				std::vector<int> temo = { dir[i].first, dir[i].second }, temp = {-dir[i].first, -dir[i].second};
+				std::vector<int> temo = { dir[i][0], dir[i][1] }, temp = { -dir[i][0], -dir[i][1] };
 
 				if (!piecePinned || pindirections == temo || pindirections == temp)
 				{
-					std::pair<int, int> p1 = { r,c }, p2 = { endrow,endcol };
+					Position p1, p2;
+					p1.instantiate(r, c), p2.instantiate(endrow,endcol);
 					int endpiece = board[endrow][endcol];
 					if (endpiece == 0)
 					{
 						Move* move = new Move();
-						move->register_move(p1, p2, board);
+						move->registerMove(p1, p2, board);
 						possible_moves.push_back({ r,c,endrow,endcol });
 					}
 					else if (abs(board[r][c] - endpiece) >= 3 && (endpiece^enemyColor) <= 6) 
 					{
 						Move* move = new Move();
-						move->register_move(p1, p2, board);
+						move->registerMove(p1, p2, board);
 						possible_moves.push_back({ r,c,endrow,endcol });
 						break;
 					}
@@ -694,21 +673,22 @@ void Gamestate::generateKnightMoves(std::vector<std::vector<int>>& possible_move
 			break;
 		}
 	}
-	const std::vector<std::pair<int, int>> dir2 = { {1,2} , {1, -2}, {-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1} };
+	const int dir2[8][2] = {{1,2} , {1, -2}, {-1,2},{-1,-2},{2,1},{2,-1},{-2,1},{-2,-1}};
 	for (auto p : dir2)
 	{
-		int endrow = r + p.first;
-		int endcol = c + p.second;
+		int endrow = r + p[0];
+		int endcol = c + p[1];
 		if (0 <= endrow && endrow < 8 && 0 <= endcol && endcol < 8)
 		{
 			if (!piecePinned)
 			{
-				std::pair<int, int> p1 = { r,c }, p2 = { endrow,endcol };
+				Position p1, p2;
+				p1.instantiate(r, c), p2.instantiate(endrow, endcol);
 				int endpiece = board[endrow][endcol];
 				if (endpiece == 0 || abs(board[r][c] - endpiece) > 5)
 				{
 					Move* move = new Move();
-					move->register_move(p1, p2, board);
+					move->registerMove(p1, p2, board);
 					possible_moves.push_back({ r,c,endrow,endcol });
 				}
 				else
@@ -771,9 +751,10 @@ void Gamestate::getKingsideCastleMoves(std::vector<std::vector<int>>& possible_m
 				inCheck = tcheck;
 				pins = tpin;
 				checks = tchecks;
-				std::pair<int, int> p1 = { r,c }, p2 = { r , c + 2 };
+				Position p1, p2;
+				p1.instantiate(r, c), p2.instantiate(r, c + 2);
 				Move* move = new Move();
-				move->register_move(p1, p2, board);
+				move->registerMove(p1, p2, board);
 				move->isCastleMove = true;
 				possible_moves.push_back({ r,c,r,c + 2});
 			}
@@ -811,9 +792,10 @@ void Gamestate::getKingsideCastleMoves(std::vector<std::vector<int>>& possible_m
 				inCheck = tcheck;
 				pins = tpin;
 				checks = tchecks;
-				std::pair<int, int> p1 = { r,c }, p2 = { r , c + 2 };
+				Position p1, p2;
+				p1.instantiate(r, c), p2.instantiate(r, c + 2);
 				Move* move = new Move();
-				move->register_move(p1, p2, board);
+				move->registerMove(p1, p2, board);
 				move->isCastleMove = true;
 				possible_moves.push_back({r,c,r,c + 2});
 			}
@@ -858,9 +840,10 @@ void Gamestate::getQueensideCastleMoves(std::vector<std::vector<int>>& possible_
 				inCheck = tcheck;
 				pins = tpin;
 				checks = tchecks;
-				std::pair<int, int> p1 = { r,c }, p2 = { r , c - 2 };
+				Position p1, p2;
+				p1.instantiate(r, c), p2.instantiate(r, c - 2);
 				Move* move = new Move();
-				move->register_move(p1, p2, board);
+				move->registerMove(p1, p2, board);
 				move->isCastleMove = true;
 				possible_moves.push_back({ r,c,r,c - 2 });
 			}
@@ -898,9 +881,10 @@ void Gamestate::getQueensideCastleMoves(std::vector<std::vector<int>>& possible_
 				inCheck = tcheck;
 				pins = tpin;
 				checks = tchecks;
-				std::pair<int, int> p1 = { r,c }, p2 = { r , c - 2 };
+				Position p1, p2;
+				p1.instantiate(r, c), p2.instantiate(r, c - 2);
 				Move* move = new Move();
-				move->register_move(p1, p2, board);
+				move->registerMove(p1, p2, board);
 				move->isCastleMove = true;
 				possible_moves.push_back({ r,c,r,c - 2 });
 			}
@@ -912,58 +896,59 @@ void Gamestate::getQueensideCastleMoves(std::vector<std::vector<int>>& possible_
 
 void Gamestate::updateCastlingRights(Move* move)
 {
-	if (move->piece_moved == 9)
+	if (move->pieceMoved == WhiteKing)
 	{
 		castling_rights[0] = false;
 		castling_rights[1] = false;
 	}
-	else if (move->piece_moved == 17)
+	else if (move->pieceMoved == BlackKing)
 	{
 		castling_rights[2] = false;
 		castling_rights[3] = false;
 	}
-	else if (move->piece_moved == 13)
+	else if (move->pieceMoved == WhiteRook)
 	{
-		if (move->start_col == 7)
+		if (move->startCol == 7)
 			castling_rights[0] = false;
-		else if(move->start_col == 0)
+		else if(move->startCol == 0)
 			castling_rights[1] = false;
 	}
-	else if (move->piece_moved == 21)
+	else if (move->pieceMoved == BlackRook)
 	{
-		if (move->start_col == 7)
+		if (move->startCol == 7)
 			castling_rights[2] = false;
-		else if (move->start_col == 0)
+		else if (move->startCol == 0)
 			castling_rights[3] = false;
 	}
 
-	if (move->piece_captured == 13)
+	if (move->pieceCaptured == WhiteRook)
 	{
-		if (move->end_col == 7)
+		if (move->endCol == 7)
 			castling_rights[0] = false;
-		else if (move->end_col == 0)
+		else if (move->endCol == 0)
 			castling_rights[1] = false;
 	}
-	else if (move->piece_captured == 21)
+	else if (move->pieceCaptured == BlackRook)
 	{
-		if (move->end_col == 7)
+		if (move->endCol == 7)
 			castling_rights[2] = false;
-		else if (move->end_col == 0)
+		else if (move->endCol == 0)
 			castling_rights[3] = false;
 	}
 }
 
 void Gamestate::generateKingMoves(std::vector<std::vector<int>>& possible_moves,int r,int c)
 {
-	const std::vector<std::pair<int, int>> dir2 = { {1,0} , {1, 1}, {0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
-	int allyColor = whiteToMove == true ? 8 : 16;
+	const int dir2[8][2] = {{1,0} , {1, 1}, {0,1},{-1,1},{-1,0},{-1,-1},{0,-1},{1,-1}};
+	int allyColor = whiteToMove == true ? White : Black;
 	for (auto p : dir2)
 	{
-		int endrow = r + p.first;
-		int endcol = c + p.second;
+		int endrow = r + p[0];
+		int endcol = c + p[1];
 		if (0 <= endrow && endrow < 8 && 0 <= endcol && endcol < 8)
 		{
-			std::pair<int, int> p1 = { r,c }, p2 = { endrow,endcol };
+			Position p1, p2;
+			p1.instantiate(r, c), p2.instantiate(endrow, endcol);
 			int endpiece = board[endrow][endcol];
 			if (endpiece == 0 || abs(board[r][c] - endpiece) > 5)
 			{
@@ -981,7 +966,7 @@ void Gamestate::generateKingMoves(std::vector<std::vector<int>>& possible_moves,
 				if (!inCheck)
 				{
 					Move* move = new Move();
-					move->register_move(p1, p2, board);
+					move->registerMove(p1, p2, board);
 					possible_moves.push_back({ r,c,endrow,endcol });
 				}
 				inCheck = tcheck;

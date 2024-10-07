@@ -4,6 +4,7 @@
 #include <iostream>
 #include <set>
 #include "Move.h"
+#include "Position.h"
 
 class Gamestate
 {
@@ -17,14 +18,6 @@ public:
 	void checkForPinsAndChecks();
 	std::vector<std::vector<int>>  GenerateAllMoves();
 	std::vector<std::vector<int>>  GenerateAllValidMoves();
-	void generatePawnMoves(std::vector<std::vector<int>>& possible_moves,int r, int c);
-	void generateSlidingMoves(std::vector<std::vector<int>>& possible_moves, int r, int c,int type);
-	void generateKingMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
-	void generateKnightMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
-	void getCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
-	void getKingsideCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
-	void getQueensideCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
-	void updateCastlingRights(Move* move);
 
 	bool whiteToMove;
 	int halfmoveCounter;
@@ -40,5 +33,31 @@ public:
 	std::vector<std::vector<int>> pins;
 	std::vector<int> enPassantPossibleLog;
 	std::vector<std::vector<bool>> CastleRightsLog;
+
+private:
+	void generatePawnMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void generateSlidingMoves(std::vector<std::vector<int>>& possible_moves, int r, int c, int type);
+	void generateKingMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void generateKnightMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void getCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void getKingsideCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void getQueensideCastleMoves(std::vector<std::vector<int>>& possible_moves, int r, int c);
+	void updateCastlingRights(Move* move);
+	enum pieceMapping {
+		White = 8,
+		WhiteKing,
+		WhitePawn,
+		WhiteKnight,
+		WhiteBishop,
+		WhiteRook,
+		WhiteQueen,
+		Black = 16,
+		BlackKing,
+		BlackPawn,
+		BlackKnight,
+		BlackBishop,
+		BlackRook,
+		BlackQueen
+	};
 };
 

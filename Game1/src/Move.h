@@ -1,22 +1,20 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "Position.h"
 
 class Move
 {
 public:
 	Move();
 	~Move();
-	
-	void register_move(std::pair<int, int>& st_sq, std::pair<int, int>& end_sq, std::vector<std::vector<int>>& board);
-
-
-	int start_row;
-	int start_col;
-	int end_row;
-	int end_col;
-	int piece_moved;
-	int piece_captured;
+	void registerMove(Position st_sq, Position end_sq, std::vector<std::vector<int>>& board);
+	int startRow;
+	int startCol;
+	int endRow;
+	int endCol;
+	int pieceMoved;
+	int pieceCaptured;
 	bool isCaptured;
 	bool isCastleMove = false;
 	int changedPiece = -1;
