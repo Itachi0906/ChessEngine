@@ -6,20 +6,13 @@ Game *game = nullptr;
 Gamestate* gs = nullptr;
 AI* ai;
 
-bool compare(Position p1, Position p2)
-{
-	if (p1.getRank() != p2.getRank() || p1.getFile() == p2.getFile())
-		return false;
-	return true;
-}
-
 int main(int argc , char *argv[])
 {
 	//initialize the game and gamestate
 	game = new Game();
 	gs = new Gamestate();
 	ai = new AI();
-	game->init("Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 400, false); // Ye sdl ka use h window create ho jaati isse 
+	game->init("Chess", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 400, 400, false);
 	game->loadimages();
 	gs->init("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 	bool running = game->running();
