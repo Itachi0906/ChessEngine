@@ -15,7 +15,7 @@ A fully functional Chess Engine implemented in C++ that allows users to play che
 1. Clone the repository:
     ```bash
     git clone https://github.com/Itachi0906/ChessEngine.git
-    cd ChessEngine
+    cd Game1/src
     ```
 
 2. Compile the project (assuming you have a C++ compiler installed):
