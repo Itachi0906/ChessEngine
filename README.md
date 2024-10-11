@@ -20,7 +20,7 @@ A fully functional Chess Engine implemented in C++ that allows users to play che
 
 2. Compile the project (assuming you have a C++ compiler installed):
     ```bash
-    g++ -o chessengine main.cpp board.cpp movegenerator.cpp -std=c++17
+    g++ -o chessengine main.cpp -std=c++17
     ```
 
 3. Run the Chess Engine:
